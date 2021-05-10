@@ -2,10 +2,16 @@ const mongoose = require('mongoose');
 
 //Create Schema
 const bookSchema = new mongoose.Schema({
-    title: String,
+    title: {
+        type: String,
+        required: true
+    },
     author: String,
     description: String,
-    category: String,
+    category: {
+        type: String,
+        enum: ["fiction", "non-fiction", "comics", "others"]
+    },
     purchaseCount: Number,
     imageUrl: String,
     tags: Array
