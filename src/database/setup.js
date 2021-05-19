@@ -10,7 +10,7 @@ module.exports= () => {
         useUnifiedTopology: true,
         useFindAndModify: false
     }, (err) =>{
-        if (err) console.log(err);
+        if (err) throw console.log('err', err);
         console.log('Connection Worked');
     })
 }
