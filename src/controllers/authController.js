@@ -46,7 +46,8 @@ exports.registerNewUser = (req, res) =>{
                         id: newUser._id,
                         username: newUser.username,
                         firstName: newUser.firstName,
-                        lastName: newUser.lastName
+                        lastName: newUser.lastName,
+                        role: newUser.role
                     }, SECRET, {
                         expiresIn: expiry
                     }, (err, token) => {
@@ -91,7 +92,8 @@ exports.loginUser = (req, res) => {
             id: foundUser._id,
             username: foundUser.username,
             firstName: foundUser.firstName,
-            lastName: foundUser.lastName
+            lastName: foundUser.lastName,
+            role: foundUser.role
         }, SECRET, {
             expiresIn: expiry
         }, (err, token) => {
