@@ -10,7 +10,6 @@ const authRoutes = require('./routes/authRoutes');
 
 //SEEDERS
 const { seedAdmin } = require('./seeders/admin') 
-console.log(seedAdmin());
 
 app.use(express.json());
 

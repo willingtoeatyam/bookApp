@@ -1,9 +1,6 @@
 const user = require('../models/user')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
-const { SECRET } = process.env;
-const expiry = 3600;
+const { createToken } = require('../services/jwtService')
 
 exports.registerNewUser = (req, res) =>{
     //fetch details from req body
@@ -41,33 +38,19 @@ exports.registerNewUser = (req, res) =>{
                         return res.status(500).json({err})
                     }
                     //create jwt for user
-                    jwt.sign(
-                        {
-                        id: newUser._id,
-                        username: newUser.username,
-                        firstName: newUser.firstName,
-                        lastName: newUser.lastName,
-                        role: newUser.role
-                    }, SECRET, {
-                        expiresIn: expiry
-                    }, (err, token) => {
-                        if (err){
-                            return res.status(500).json({err})
-                        }
-                        //send token to user
-                        return res.status(200).json({
-                            message: 'User Registration successful',
-                            token
-                        })
+                    let token  = createToken(newUser);
+                    if(!token) {
+                        return res.status(500).json({ message: 'Sorry,we couldn/"t authenticate you'})
+                    }
+                    //send token to user
+                    return res.status(200).json({
+                        message: 'User Registration successful',
+                        token
                     })
                 })
             })
         })
     })
-    
-    //save password to db
-    //create jwt for user
-    //send token to user
 }
 
 exports.loginUser = (req, res) => {
@@ -79,31 +62,20 @@ exports.loginUser = (req, res) => {
         if(!foundUser){
             return res.status(401).json({message: 'Incorrect Username'})
         } 
-        // else {
-        //     return res .status(200).json({ foundUser })
-        // }
         //Check if password is correct
         let match = bcrypt.compareSync(req.body.password, foundUser.password)
         if(!match){
             return res.status(401).json({message: 'Incorrect Password'})
         }
         //create token
-        jwt.sign({
-            id: foundUser._id,
-            username: foundUser.username,
-            firstName: foundUser.firstName,
-            lastName: foundUser.lastName,
-            role: foundUser.role
-        }, SECRET, {
-            expiresIn: expiry
-        }, (err, token) => {
-            if(err) {
-                return res.status(500).json({err})
-            }
-            return res.status(200).json({
-                message: 'User logged in',
-                token //Send token to user
-            })
+        let token  = createToken(foundUser);
+        if(!token) {
+            return res.status(500).json({ message: 'Sorry,we couldn/"t authenticate you'})
+        }
+        //Send token to user
+        return res.status(200).json({
+            message: 'User logged in',
+            token 
         })
     })
 }

@@ -1,6 +1,4 @@
-const jwt = require('jsonwebtoken');
-require ('dotenv').config();
-const { SECRET } = process.env;
+const { decodeToken } = require('../services/jwtService')
 
 exports.authenticateUser = (req, res, next) => {
     //check for authorization token
@@ -15,15 +13,13 @@ exports.authenticateUser = (req, res, next) => {
     }    
     let token = splitHeader[1];
     //check if valid
-    jwt.verify(token, SECRET, (err, decodedToken) => {
-        if(err) return res.status(500).json({err});
-        if (!decodedToken){
-            return res.status(401).json({message: 'Invalid authorization token. Please Login'})
-        }
-        req.user = decodedToken;
-        //allow user to continue with request
-        next()
-    }) 
+    let decodedToken = decodeToken(token);
+    if (!decodedToken){
+        return res.status(401).json({message: 'Invalid authorization token. Please Login'})
+    }
+    req.user = decodedToken;
+    //allow user to continue with request
+    next()
 }
 
 exports.checkIfAdmin = (req, res, next) => {
